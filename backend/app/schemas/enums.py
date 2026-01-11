@@ -2,8 +2,8 @@ from enum import Enum
 
 
 class ReplyType(str, Enum):
-    receive = "receive"
-    clarify = "clarify"
+    reflective = "reflective"
+    clarifying = "clarifying"
     action = "action"
     boundary = "boundary"
 

@@ -1,24 +1,20 @@
 from fastapi import APIRouter, Depends
 from app.api.deps import get_repo
 from app.schemas.thoughts import ThoughtCreateRequest, ThoughtCreateResponse, ThoughtListItem
+from app.services.thought_service import ThoughtService
 
 router = APIRouter(prefix="/api/thoughts", tags=["thoughts"])
 
 
 @router.post("", response_model=ThoughtCreateResponse)
 async def create_thought(payload: ThoughtCreateRequest, repo=Depends(get_repo)):
-    # TODO: 下一步我们会接入：service -> qwen -> validation -> fallback -> repo.create
-    # 这里先返回占位，确保路由可跑通
+    service = ThoughtService(repo)
+    ai = await service.generate_ai_result(payload.content, payload.response_type)
     tid = await repo.create_thought(
         content=payload.content,
         reply_type=payload.reply_type,
-        ai={
-            "reply_text": "（占位）我在，先把这件事放在这里。",
-            "topic_guess": "general",
-            "mood_guess": "neutral",
-            "mood_score": 50,
-            "context_guess": "other",
-        },  # pydantic 会在后续 service 层严格化
+        response_type=ai.response_type,
+        ai=ai,
     )
     # 从repo取最新一条（in_memory是insert(0)）
     items = await repo.list_thoughts(limit=1, offset=0)
@@ -31,6 +27,7 @@ async def create_thought(payload: ThoughtCreateRequest, repo=Depends(get_repo)):
         mood_guess=t.mood_guess,
         mood_score=t.mood_score,
         context_guess=t.context_guess,
+        response_type=t.response_type,
     )
 
 

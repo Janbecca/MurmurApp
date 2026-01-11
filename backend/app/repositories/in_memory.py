@@ -12,13 +12,13 @@ class InMemoryRepo(ThoughtRepository, SummaryRepository):
         self._thoughts: List[ThoughtListItem] = []
         self._summaries: dict[str, SummaryJSON] = {}
 
-    async def create_thought(self, content: str, reply_type: ReplyType, ai: ThoughtAIResult) -> str:
+    async def create_thought(self, content: str, response_type: ReplyType, ai: ThoughtAIResult) -> str:
         tid = str(uuid.uuid4())
         item = ThoughtListItem(
             id=tid,
             content=content,
             created_at=datetime.utcnow(),
-            reply_type=reply_type,
+            response_type=reply_type,
             reply_text=ai.reply_text,
             topic_guess=ai.topic_guess,
             mood_guess=ai.mood_guess,

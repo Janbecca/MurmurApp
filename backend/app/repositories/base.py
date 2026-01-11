@@ -11,7 +11,7 @@ class ThoughtRepository(ABC):
     async def create_thought(
         self,
         content: str,
-        reply_type: ReplyType,
+        response_type: ReplyType,
         ai: ThoughtAIResult,
     ) -> str:
         ...
